@@ -20,18 +20,27 @@ var io = socketIO(server);
 // Ref: http://expressjs.com/en/starter/static-files.html
 app.use(express.static(publicPath));
 
+// NOTES:
+// socket.emit emits an event on a specific socket / connection
+// io.emit emtis an event on entire network of sockets / all connections
+
 io.on('connection', (socket) =>{
   console.log('New user connected');
 
-  socket.emit('newMessage', {
-      from: 'John',
-      text: 'See you then',
-      createdAt: 123123
-  }); // Emit an emvent
+  // socket.emit('newMessage', {
+  //     from: 'John',
+  //     text: 'See you then',
+  //     createdAt: 123123
+  // }); // Emit an emvent
 
 
   socket.on('createMessage', (message) => {
     console.log('createMessage', message);
+    io.emit('newMessage', {
+      from: message.from,
+      text: message.text,
+      createdAt: new Date().getTime()
+    });
   });
 
   socket.on('disconnect', () =>{
